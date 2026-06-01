@@ -46,14 +46,13 @@
         .highlight-card { background: #fafcff; border-radius: 16px; border: 1px solid #e2e9f2; overflow: hidden; }
         .highlight-video { width: 100%; aspect-ratio: 16/9; background: #000; border: none; }
         .highlight-caption { padding: 8px 12px; font-size: 0.75rem; background: #f5f7fc; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .upload-progress { background: #eef2f8; border-radius: 40px; padding: 4px 12px; font-size: 0.7rem; color: #1d4e6e; display: inline-block; margin-left: 10px; }
-        .progress-bar-container { background: #e2e8f0; border-radius: 20px; height: 8px; width: 100%; margin-top: 8px; overflow: hidden; }
-        .progress-bar-fill { background: #2a6b4e; width: 0%; height: 100%; transition: width 0.3s; border-radius: 20px; }
         .add-methods { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
         .method-tab { flex: 1; text-align: center; padding: 8px; cursor: pointer; border-radius: 40px; background: #eef2f8; transition: 0.2s; }
         .method-tab.active { background: #1d4e6e; color: white; }
         .method-panel { display: none; }
         .method-panel.active { display: block; }
+        .progress-bar-container { background: #e2e8f0; border-radius: 20px; height: 8px; width: 100%; margin-top: 8px; overflow: hidden; }
+        .progress-bar-fill { background: #2a6b4e; width: 0%; height: 100%; transition: width 0.3s; border-radius: 20px; }
         footer { text-align: center; padding: 12px; font-size: 0.65rem; background: #fafcff; border-top: 1px solid #eef2f8; }
         @media (max-width: 760px) { .side-menu { width: 200px; } }
         .edit-stats-btn { background: #f5b042; color: #1a1a2e; padding: 3px 8px; font-size: 0.7rem; margin-left: 10px; border-radius: 20px; }
@@ -194,7 +193,7 @@
                 <td>${p.rating||70}</td>
             </tr>`;
         });
-        playersHtml += `</tbody></tr>`;
+        playersHtml += `</tbody><tr>`;
         
         let leagueStat = stats[club.league]?.[clubName] || {};
         let trophies = club.trophies;
@@ -446,7 +445,7 @@
     }
     window.addNews = function() { if(currentMode!=="creator") return; let title=document.getElementById("newsTitle")?.value, content=document.getElementById("newsContent")?.value; if(!title||!content) return; newsPosts.unshift({ id:Date.now(), title, content, date:new Date().toLocaleString() }); saveAll(); renderContent("news"); };
     
-    // ХАЙЛАТЫ — ДВА СПОСОБА: загрузка файла ИЛИ ссылка
+    // ХАЙЛАТЫ
     let activeMethod = "file";
     
     function renderHighlights() {
@@ -536,7 +535,6 @@
         } else {
             let link = document.getElementById("videoLink")?.value.trim();
             if(!link) { alert("Введите ссылку на видео"); return; }
-            // Преобразуем YouTube ссылки в embed формат
             let embedUrl = link;
             if(link.includes("youtube.com/watch?v=")) {
                 let videoId = link.split("v=")[1].split("&")[0];
@@ -576,7 +574,7 @@
         let cupWinner = last?.winners?.cup || "—";
         let supercupWinner = last?.winners?.supercup || "—";
         let historyHtml = `<h4>📜 История</h4><table class="league-table"><thead><th>Сезон</th><th>Чемпион БПЛ</th><th>Кубок</th><th>Суперкубок</th></thead><tbody>`;
-        [...seasonsHistory].reverse().forEach(sh => { historyHtml += `<tr><td>${sh.season}</td><td>${sh.winners.bpl||"—"}</td><td>${sh.winners.cup||"—"}<tr><td>${sh.winners.supercup||"—"}</td></tr>`; });
+        [...seasonsHistory].reverse().forEach(sh => { historyHtml += `<tr><td>${sh.season}</td><td>${sh.winners.bpl||"—"}</td><td>${sh.winners.cup||"—"}</td><td>${sh.winners.supercup||"—"}</td></tr>`; });
         historyHtml += `</tbody></table>`;
         let setForm = currentMode === "creator" ? `<div style="background:#f0f3f8;padding:16px;border-radius:20px;margin-bottom:20px;"><h4>🏆 Установить победителей</h4><input type="text" id="setCup" placeholder="Кубок"><input type="text" id="setSuper" placeholder="Суперкубок"><button onclick="setCupWinners()">✅ Сохранить</button></div>` : "";
         return `<div class="info-card"><h3>🏆 Кубок и Суперкубок</h3>${setForm}<p><strong>Кубок:</strong> ${cupWinner}</p><p><strong>Суперкубок:</strong> ${supercupWinner}</p>${historyHtml}</div>`;
@@ -695,7 +693,7 @@
     }
     
     function renderApp() {
-        document.getElementById("app").innerHTML = `<div class="app-wrapper"><div class="header"><div class="logo"><h1>TRANSFERBIZ PRO</h1><p>${currentMode==="creator"?"создатель":"читатель"}</p></div><div class="header-buttons"><button onclick="exportFull()" style="background:#2a6b4e;">📤 Экспорт</button><button onclick="triggerImport()" style="background:#3a5a6e;">📥 Импорт</button></div><div class="user-mode">👤 ${currentMode==="creator"?"Создатель":"Читатель"} ${currentMode!=="creator"?`<button onclick="switchToCreator()">Войти</button>`:`<button onclick="switchToReader()">Выйти</button>`}</div></div><div class="flex-row"><div class="side-menu" id="sideMenu"></div><div class="content-area" id="mainContent"></div></div><footer>⚽ TRANSFERBIZ PRO — Хайлаты: загружайте видео или добавляйте по ссылке (YouTube/Vimeo)</footer></div>`;
+        document.getElementById("app").innerHTML = `<div class="app-wrapper"><div class="header"><div class="logo"><h1>TRANSFERBIZ PRO</h1><p>${currentMode==="creator"?"создатель":"читатель"}</p></div><div class="header-buttons"><button onclick="exportFull()" style="background:#2a6b4e;">📤 Экспорт</button><button onclick="triggerImport()" style="background:#3a5a6e;">📥 Импорт</button></div><div class="user-mode">👤 ${currentMode==="creator"?"Создатель":"Читатель"} ${currentMode!=="creator"?`<button onclick="switchToCreator()">Войти</button>`:`<button onclick="switchToReader()">Выйти</button>`}</div></div><div class="flex-row"><div class="side-menu" id="sideMenu"></div><div class="content-area" id="mainContent"></div></div><footer>⚽ TRANSFERBIZ PRO — Хайлаты: загружайте видео или добавляйте по ссылке</footer></div>`;
         
         let sections = ["home", "bpl", "league2", ...leagues.filter(l=>l!=="БПЛ" && l!=="2 лига"), "clubs", "news", "highlights", "cup"];
         let names = ["🏠 Главная", "🏆 БПЛ", "📋 2 лига", ...leagues.filter(l=>l!=="БПЛ" && l!=="2 лига").map(l=>`📋 ${l}`), "🏟️ Клубы", "📰 Новости", "🎬 Хайлаты", "🏆 Кубок"];
